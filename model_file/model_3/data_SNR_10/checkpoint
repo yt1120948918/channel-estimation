@@ -1,0 +1,2 @@
+model_checkpoint_path: "data_SNR_10"
+all_model_checkpoint_paths: "data_SNR_10"

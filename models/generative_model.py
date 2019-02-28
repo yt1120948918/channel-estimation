@@ -12,7 +12,7 @@ class GModel(BaseModel):
         self.name = name
         super(GModel, self).__init__()
 
-    def calculate_loss(self, inputs, labels, is_pred_return=False):
+    def calculate_loss(self, inputs, labels):
         pred = self.create_model(inputs)
         train_loss = tf.reduce_sum((pred - labels) ** 2) / self.batch_size
 
@@ -24,9 +24,7 @@ class GModel(BaseModel):
         new_pred = pred * mask
         mse = tf.reduce_sum((new_pred - labels) ** 2) / self.batch_size
 
-        if is_pred_return:
-            return train_loss, mse, pred
-        return train_loss, mse
+        return train_loss, mse, tf.to_float(pred)
 
     def create_model(self, inputs):
         with tf.name_scope(self.name):
@@ -53,7 +51,7 @@ class GModel(BaseModel):
             deconv2_1 = tf.nn.relu(deconv2_1)
             # 第三层
             deconv3_1 = model_utils.deconv_layer(deconv2_1, [self.batch_size, 30, 8, 64], 128, 64,
-                                                 [3, 3], [1, 1, 1, 1], 'VALID', self.normal_type,
+                                                  [3, 3], [1, 1, 1, 1], 'VALID', self.normal_type,
                                                  self.is_training, 'deconv3_1')
             deconv3_1 = tf.nn.relu(deconv3_1)
             # 第四层
